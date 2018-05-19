@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/2.2.4/fabric.min.js"></script>
+    <style type="text/css">
+    form{
+        width: 60%;
+        align-items: center;
+    }
+    html{ overflow-y: scroll;}
+
+    #showClock a{
+      color: white;
+      padding: 25px;
+      background-color: green;
+      text-decoration: none;
+    }
+  
+    </style>
+</head>
+ <nav class="navbar navbar-inverse">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">Survey App</a>
+    </div>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="/">Home</a></li>
+      <li><a href="#">About</a></li>
+      <li><a href="#">Example chart</a></li>
+    </ul>
+  </div>
+</nav>
+<body>
+<div class="row">
+<div align="center" class="col-md-6">
+<br>
+<form>
+    <input type="text" id="QuestionTxt" class="form-control" placeholder="Enter Question Text" required>
+    <input type="submit" id="submit_btn" value="Submit your question" class="btn btn-secondary">
+</form>
+<br><br><br>
+<h3 align="center">Your chart:</h3>
+<hr>
+
+<canvas id="myChart"></canvas>
+</div>
+
+
+<div align="center" class="col-md-6" id="displayQuestions">
+<br><br>
+</div>
+<div id="showClock" class="col-md-6" align="center">
+
+</div>
+</div>
+<script type="text/javascript">
+myChart = document.getElementById('myChart').getContext('2d');
+var c = document.getElementById('myChart');
+function doJPGExport(){
+  var dataURL = c.toDataURL('image/jpeg', 1.0);
+  document.getElementById("showClock").innerHTML = `<img src="/img" /><br><br><br><br><br><hr><a href="${dataURL}" onclick="return deleteRecords()" download>End Survey</a>`;
+}
+
+document.getElementById("showClock").innerHTML = `<h3 align="center">Your time starts <strong>Now!</strong></h3><br>
+<img src="/hourgif" style="width:30%;height:20%"/>`;
+document.getElementById("submit_btn").disabled = true;
+
+setTimeout(done, 30000)
+
+
+function done () {
+document.getElementById("showClock").innerHTML = '<h3 align="center">Your time is <strong>over</strong></h3><br><img src="/img" /><br><br><br><button class="btn btn-secondary" onclick="doJPGExport()">Save Survey Results</button>';
+  clearInterval(myVar);
+  document.getElementById("submit_btn").disabled = false;
+
+}
+/*
+
+*/
+
+</script>
+<script type="text/javascript">
+var myVar = setInterval(myTimer, 1000)
+
+var Ycount = 0
+var Ncount = 0
+var option = {
+  scales: {
+    xAxes: [{
+      gridLines: {
+        offsetGridLines: true,
+      }
+    }],
+    yAxes : [{
+        display: true,
+        ticks : {
+            beginAtZero : true,
+        }
+    }]
+  }
+}
+
+var barChart = new Chart(myChart, {
+  type: 'pie', // pie,line,radar
+  data: {
+    labels: ['Yes', 'No'],
+    datasets: [{
+      label: "",
+      data: [Ycount, Ncount],
+      backgroundColor: ['lightgreen', 'lightblue']
+    }]
+  },
+  options: option
+})
+
+function myTimer () {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            var data = JSON.parse(this.responseText);
+            Ycount = data.YesCount
+            Ncount = data.NoCount
+
+            barChart.data.datasets[0].data[0] = Ycount
+            barChart.data.datasets[0].data[1] = Ncount
+            barChart.data.datasets[0].label = question[0].Qtxt
+
+            barChart.update()
+        }
+    };
+
+xhttp.open("GET", "/select?t=" +Math.random(),true);
+xhttp.send();
+}
+</script>
+
+<script type="text/javascript">
+//Delete all records
+function deleteRecords() {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200 || this.Status == 304) {
+        console.log("Deleted all records!")
+    } else {
+        console.log("There must've been some error!")
+    }
+        
+    }
+  xhttp.open("GET", "/deleteResponses", true);
+  xhttp.send(null);
+  //delete the myTimer function here!
+}
+
+
+</script>
+
+<script type="text/javascript">
+    display = "";
+    question = "";
+</script>
+<script type="text/javascript">
+    var submit = document.getElementById('submit_btn');
+    submit.onclick = function () {
+        var request = new XMLHttpRequest();
+        request.onreadystatechange = function() {
+            if (request.readyState == 4 && request.Status == 200 || request.Status == 304){
+                alert("Data inserted");
+                submit.value = "Question submitted!";
+            }
+      }
+        var QuestionTxt = document.getElementById('QuestionTxt').value;
+        console.log(QuestionTxt);
+        request.open('POST', '/submitQuestion', true);
+        request.setRequestHeader('Content-Type', 'application/json');
+        request.send(JSON.stringify({QuestionTxt: QuestionTxt}));
+        clearInterval(myVar);
+        deleteRecords();
+
+}
+    
+</script>
+<script type="text/javascript">
+var xhttp = new XMLHttpRequest();
+xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+        question = JSON.parse(this.responseText);
+        var length = Object.keys(question).length;
+        var number = 0;
+        display += "Active Question:" + "<h1>" + question[0].Qtxt + "<br>" + "</li>" + "</h1>" + "<hr>";
+        document.getElementById("displayQuestions").innerHTML = display
+
+      };
+        
+
+  }
+xhttp.open("GET", "/getQuestions", true);
+xhttp.send(null);
+</script>
+</body>
+</html>

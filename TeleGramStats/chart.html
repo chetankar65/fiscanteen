@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js">
+    </script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.5/jspdf.debug.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.js"></script>
+
+
+
+
+<!--
+<script type="application/javascript" src="/testchartupdate">           
+</script>
+-->
+
+<title>2018:Survey</title>
+</head>
+<body>
+<nav class="navbar navbar-expand-sm bg-light navbar-light">
+  <ul class="navbar-nav">
+    <li class="nav-item active">
+      <a class="nav-link" href="#">Home</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="">About</a>
+    </li>
+  </ul>
+</nav>
+</div>
+<div class="row" id="dvContainer">
+<div class="col-sm-9 col-md-6" id="timer">
+  <canvas id="myChart"></canvas>
+</div>
+</div>
+
+<button onclick="generatePNG()">Generate A PNG</button>
+<script type="text/javascript" src="/main">           
+</script>
+<!--
+<div class="col-sm-3 col-md-6" id="displayQuestions">
+</div>
+
+</body>
+<script type="text/javascript">
+var request = new XMLHttpRequest();
+request.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+        var data = JSON.parse(this.responseText);
+        var x ="";
+        var length = Object.keys(data).length; //you get length json result 4
+        var Qno = 0;
+        for (var i=0;i<length;i++){
+            x += "<h6>" + data[i].Qtxt + "</h6>" + "<hr>";
+            Qno +=1;
+        }
+        document.getElementById("displayQuestions").innerHTML = "<h1>" + "YourQuestions:"+"</h1>"+"<br>"+"Q."+Qno+x;
+    } else {
+        //alert("Error!");
+  }
+};
+request.open("GET", "/getQuestions", true);
+request.send(null);
+
+</script>
+-->
+
+</html>

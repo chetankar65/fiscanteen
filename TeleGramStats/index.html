@@ -1,0 +1,120 @@
+<html>
+<head>
+  <meta name="google-signin-client_id" content="143757580997-0si4nrtm776v5sal90ha2lkpla0jup9f.apps.googleusercontent.com">
+  <meta charset="utf-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
+    <script src="https://apis.google.com/js/platform.js?onload=renderButton" async defer></script>
+    <style type="text/css">
+      #link a{
+        padding: 20px;
+        background-color: lightgrey;
+        color: white;
+        text-decoration: none;
+      }
+      form{
+        width: 60%;
+        align-items: center;
+      }
+ 
+    </style>
+    <!--Navbar-->
+ <nav class="navbar navbar-inverse">
+  	<div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">Survey App</a>
+    </div>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="#">Home</a></li>
+      <li><a href="#">About</a></li>
+      <li><a href="#">Example chart</a></li>
+    </ul>
+  </div>
+</nav>
+</head>
+<body>
+  <div id="my-signin2" align="center"></div>
+  <div id="showLoginText" align="center"></div>
+  <div id="loginBtn" align="center"></div>
+  <br><br>
+
+  <div align="center" id="img"></div>
+  <div align="center" id="Name"></div>
+  <div align="center" id="email"></div><br><br><br>
+  <div align="center" id="link"></div>
+  <div align="center" id="form"></div>
+
+  <script>
+function onSignIn(googleUser) {
+  profile = googleUser.getBasicProfile();
+  img = profile.getImageUrl();
+  Name = profile.getName();
+  email = profile.getEmail(); 
+  id_token = googleUser.getAuthResponse().id_token;
+  document.getElementById("img").innerHTML = `<img src="${img}" class="img-rounded">`
+  document.getElementById("Name").innerHTML = `<h3>${Name}</h3>`
+  document.getElementById("email").innerHTML = `<h3>${email}</h3>`
+  document.getElementById("link").innerHTML = `<a href="/event">Go to dashboard</a>`;
+  document.getElementById("showLoginText").innerHTML = `<button onclick="signOut()">Logout</button>`;
+
+  /*Send request as JSON
+  -Insert objects into database
+  -If data is already in database,set session and redirect to dashboard
+  */ 
+}
+function onFailure(error) {
+      console.log(error);
+}
+function renderButton() {
+  gapi.signin2.render('my-signin2', {
+  'scope': 'profile email',
+  'width': 240,
+  'height': 50,
+  'longtitle': true,
+  'theme': 'light',
+  'onsuccess': onSignIn,
+  'onfailure': onFailure
+  });
+}
+function signOut() {
+   var auth2 = gapi.auth2.getAuthInstance();
+   auth2.signOut().then(function () {
+    document.getElementById("img").innerHTML = "";
+  	document.getElementById("Name").innerHTML = ``
+  	document.getElementById("email").innerHTML = ``
+	document.getElementById("link").innerHTML = ``;
+  	document.getElementById("showLoginText").innerHTML = `Your not signed in!`;
+
+
+
+
+  });
+}
+ 
+</script>
+<script src="https://apis.google.com/js/platform.js?onload=renderButton" async defer></script>
+<script type="text/javascript">
+/*
+function xhr() {
+  var request = new XMLHttpRequest();
+  request.onreadystatechange = function() {
+    if (request.readyState == 4 && request.Status == 200 || request.Status == 304){
+      window.location = "/event";
+    } else {
+      alert("Error!")
+    }
+  }
+  var QuestionTxt = document.getElementById('QuestionTxt').value;
+  request.open('POST', '/create-user', true);
+  request.setRequestHeader('Content-Type', 'application/json');
+  request.send(JSON.stringify({: })); 
+  window.location = "/event";
+ 
+}
+*/
+</script>
+</body>
+</html>
