@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Admin Dashboard|List items here|</title>
+	<style type="text/css">
+	table,tr,th,td {
+		border:1px black solid;
+		padding: 25px;
+		width: 50%;
+	}
+	body {
+	    font-family: "Lato", sans-serif;
+	}
+
+	.sidenav {
+	    height: 100%;
+	    width: 20%;
+	    position: fixed;
+	    z-index: 1;
+	    top: 0;
+	    left: 0;
+	    background-color: #111;
+	    overflow-x: hidden;
+	    transition: 0.5s;
+	    padding-top: 60px;
+	}
+
+	.sidenav a {
+	    padding: 8px 8px 8px 32px;
+	    text-decoration: none;
+	    font-size: 25px;
+	    color: #818181;
+	    display: block;
+	    transition: 0.3s;
+	}
+
+	.sidenav a:hover {
+	    color: #f1f1f1;
+	}
+
+	@media screen and (max-height: 450px) {
+	  .sidenav {padding-top: 15px;}
+	  .sidenav a {font-size: 18px;}
+	}
+	input[type=text],select{
+		width: 50%;
+		height:40px;
+	}
+	input[type=number]{
+		width: 50%;
+		height:40px;
+	}
+	input[type=submit]{
+		width: 50%;
+		height: 70px;
+		background-color: green;
+		color: white;
+	}
+	button {
+		padding: 10px;
+		background-color: red;
+		color: white;
+		font-size: 20px;
+	}
+	button:hover {
+		background-color: darkred;
+	}
+	td{
+		background-color: lightgrey;
+	}
+	</style>
+</head>
+<body>
+<div id="mySidenav" class="sidenav">
+  <a href="/">Home</a>
+  <a href="#Ordering">Who's Ordering today?</a>
+  <a href="http://freedom-international.in">Official website</a>
+</div>
+<div align="center">
+<img src="/logo" style="width: 30%;height: 120px;" alt="logo">
+</div>
+<hr>
+<!--<span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776; </span>-->
+<u><h3 align="center">Products on sale today:</h3></u>
+<div id="table" align="center">
+<select id="display"></select>
+<input type="submit" id="delete" value="Delete Product">
+</div>
+<hr>
+<br>
+<u><h3 align="center">Add more items:</h3></u>
+<div align="center">
+	<form>
+		<input type="text" id="name" placeholder="Name"><br>
+		<input type="number" id="price" placeholder="Price"><br>
+		<input type="text" id="url" placeholder="Image URL"><br>
+		<input type="submit" id="submit" value="Submit Product">
+	</form>
+</div>
+<hr>
+<u><h3 align="center">Who wants food today?</h3></u>
+<div id="Ordering" align="center">
+<div id="orders"></div>
+<input type="submit" id="deleteall" value="Delete all existing orders">
+</div>
+<script type="text/javascript">
+	var submit = document.getElementById('submit')
+    submit.onclick = function () {
+        var request = new XMLHttpRequest();
+        request.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200){
+              alert("New items added!")
+              submit.value = "New Items added!"
+              window.location = '/dashboard'
+            }else {
+              submit.value = "Some error."
+            }
+        }
+        var name = document.getElementById('name').value;
+        var price = document.getElementById('price').value;
+        var url = document.getElementById('url').value;
+        request.open('POST', '/submit-item', true);
+        request.setRequestHeader('Content-Type', 'application/json');
+        request.send(JSON.stringify({name: name,price:price,url:url}));
+        submit.value = "Adding item..."
+    }
+</script>
+<script type="text/javascript">
+var xhttp = new XMLHttpRequest()
+xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+    	var display
+    	data = JSON.parse(this.responseText)
+      	var length = Object.keys(data).length
+        for (i=0; i < length; i++){
+        	display += 	`<option>${data[i].name}</option>`
+    	}
+    	document.getElementById('display').innerHTML = display
+     }
+}
+xhttp.open("GET", "/getItems" ,true);
+xhttp.send(null);
+</script>
+<script type="text/javascript">
+	var deletebtn = document.getElementById('delete')
+    deletebtn.onclick = function () {
+        var request = new XMLHttpRequest();
+        request.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200){
+              alert("Deleted item!!!")
+              deletebtn.value = "Deleted item!"
+              window.location = '/2TJB9WCqhOp3kl3wdbbZ43FBno2VDeydujRWRMlAO391dfvFZW5esRd2'
+            }else {
+              deletebtn.value = "Some error."
+            }
+        }
+        var display = document.getElementById('display').value;
+        request.open('POST', '/delete-item', true);
+        request.setRequestHeader('Content-Type', 'application/json');
+        request.send(JSON.stringify({display: display}));
+        deletebtn.value = "Deleting item..."
+    }
+</script>
+<script type="text/javascript">
+var req = new XMLHttpRequest()
+req.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+    	var display = '<table>'
+    	display += `<tr>
+    	<th>Buyer's Name</th>
+    	<th>Product name </th>
+    	<th>Quantity</th>
+    	<th>Total Price</th>
+      <th>Date ordered</th>
+    	</tr>`
+    	var data = JSON.parse(this.responseText)
+      	var length = Object.keys(data).length
+        for (i=0; i < length; i++){
+        	display += '<tr>'
+        	display += 	`<td>${data[i].username}</td>`
+        	display += `<td>${data[i].product}</td>`
+        	display += `<td>${data[i].quantity}</td>`
+        	display += `<td>Rs.${data[i].cost * data[i].quantity}</td>`
+          display += `<td>${data[i].date}</td>`
+        	display += '</tr>'
+    	}
+    	display += '</table>'
+    	document.getElementById('orders').innerHTML = display
+     }
+}
+req.open("GET", "/getOrders" ,true);
+req.send(null);
+</script>
+<script type="text/javascript">
+	var deletebtn = document.getElementById('deleteall')
+    deletebtn.onclick = function () {
+        var request = new XMLHttpRequest();
+        request.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200){
+              alert("Deleted all orders!!!")
+              deletebtn.value = "Deleted orders!"
+              window.location = '/2TJB9WCqhOp3kl3wdbbZ43FBno2VDeydujRWRMlAO391dfvFZW5esRd2'
+            }else {
+              deletebtn.value = "Some error."
+            }
+        }
+        var display = document.getElementById('display').value;
+        request.open('POST', '/delete-all', true);
+        request.setRequestHeader('Content-Type', 'application/json');
+        request.send(null);
+        deletebtn.value = "Deleting orders..."
+    }
+</script>
+<script type="text/javascript">
+  var remove= document.getElementById('remove')
+    remove.onclick = function () {
+        var request = new XMLHttpRequest();
+        request.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200){
+              alert("Deleted all orders!!!")
+              remove.value = "Deleted orders!"
+              window.location = '/2TJB9WCqhOp3kl3wdbbZ43FBno2VDeydujRWRMlAO391dfvFZW5esRd2'
+            }else {
+              remove.value = "Some error."
+            }
+        }
+        var checkout = document.getElementById('remove').value;
+        request.open('POST', '/checkout', true);
+        request.setRequestHeader('Content-Type', 'application/json');
+        request.send(JSON.stringify({checkout:checkout}));
+        remove.value = "Deleting order..."
+    }
+</script>
+</body>
+</html>

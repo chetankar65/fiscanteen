@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<!--Bootstrap-->
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<!-- jQuery library -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<!-- Latest compiled JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<title>FIS CANTEEN|What's available today?</title>
+	<style type="text/css">
+		body{
+			margin-right: 5%;
+			margin-left: 5%;
+			margin-top: 2%;
+		}
+		ul {
+			overflow: hidden;
+			background-color: white;
+			list-style-type: none;
+		}
+		li{
+			float: left;
+		}
+		li a {
+			padding: 20px 25px;
+			display: block;
+			color: black;
+			text-decoration: none;
+		}
+		li a:hover {
+			padding: 20px 25px;
+			display: block;
+			color: black;
+		}
+		input[type=text] {
+			width: 50%;
+			height: 50px;
+			box-sizing: border-box;
+			box-shadow: currentColor;
+		}
+		input[type=password] {
+			width: 50%;
+			height: 50px;
+			box-sizing: border-box;
+			box-shadow: currentColor;
+		}
+		input[type=submit] {
+			width: 50%;
+			height: 50px;
+			background-color: green;
+			color: white;
+		}
+		input[type=submit]:hover {
+			background-color: darkgreen;
+		}
+	</style>
+</head>
+<body>
+<ul>
+	<li><img src="/logo" style="width: 50%;height: 100px;"></li>
+	<br>
+	<li><a href="/register">Register   /</a></li>
+	<li><a href="/">Home  /</a></li>
+	<li><a href="/adminlogin">Admin Login   /</a></li>
+</ul>
+<hr>
+<div id="alert" align="center"></div>
+<div id="form" align="center">
+	<h3>Faculty login:</h3>
+	<form>
+		<input type="text" id="username" placeholder="Name">
+		<input type="password" id="password" placeholder="Password">
+		<input type="submit" id="submit_btn" value="Faculty Login">
+	</form>
+	<p>Don't have an account?Register <a href="/register">here</a></p>
+</div>
+</body>
+<script type="text/javascript">
+function sleep(milliseconds) {
+  var start = new Date().getTime();
+  for (var i = 0; i < 1e7; i++) {
+    if ((new Date().getTime() - start) > milliseconds){
+      break;
+    }
+  }
+}
+</script>
+<script type="text/javascript">
+	var submit = document.getElementById('submit_btn')
+    submit.onclick = function () {
+        var request = new XMLHttpRequest();
+        request.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200){
+            	console.log('Should Redirect!')
+              	window.location.replace('/')
+          }	else if(this.readyState == 4 && this.status == 403)	{
+           		alert("Account doesn't exist or credentials are wrong.")
+           		console.log('Wrong credentials')
+            } else {
+              //submit.value = "Some error!"
+              console.log('Wont do anything!')
+            }
+        }
+        var username = document.getElementById('username').value;
+        var password = document.getElementById('password').value;
+        request.open('POST', '/login', true);
+        request.setRequestHeader('Content-Type', 'application/json');
+        request.send(JSON.stringify({username: username,password:password}));
+        submit.value = "Logging in..."
+        sleep(3000)
+    }
+</script>
+</html>
